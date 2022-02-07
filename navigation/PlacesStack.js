@@ -5,13 +5,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import {MaterialCommunityIcons} from "@expo/vector-icons"
 import {Ionicons} from "@expo/vector-icons"
 
-import HomeScreen from "../screens/HomeScreen"
+import ProfileScreen from '../screens/ProfileScreen';
 import PlacesListScreen from "../screens/PlacesListScreen"
 import NewPlaceScreen from "../screens/NewPlaceScreen"
 import PlaceDetailScreen from "../screens/PlaceDetailScreen"
 import MapScreen from "../screens/MapScreen"
 import MessagesScreen from '../screens/MessagesScreen';
 import ChatScreen from '../screens/ChatScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -52,7 +53,14 @@ const ProfileStack = props => {
   <Stack.Navigator>
     <Stack.Screen
       name="Profile"
-      component={HomeScreen}
+      component={ProfileScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="Rediger"
+      component={EditProfileScreen}
       options={{
         headerShown: false,
       }}
