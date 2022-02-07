@@ -17,19 +17,19 @@ export const authenticate = (userId, token, expiryTime) => {
 }
 
 
-export const signup = (email, password) => {
+export const signup = (email, password, userName, imageUrl) => {
     let user;
     return async dispatch => {
     try {
-     await auth.createUserWithEmailAndPassword(email, password)
+     await auth.createUserWithEmailAndPassword(email, password, userName, imageUrl)
      .then(() => {
          user = auth.currentUser
          db.collection('users').doc(auth.currentUser.uid)
          .set({
-             fname: 'Tina',
-             lname: 'Irgendwas',
+             userId: auth.currentUser.uid,
+             name: userName,
              email: email,
-             userImg: null,
+             userImg: imageUrl,
              about: "",
              phone: "",
              country: "Denmark",
@@ -41,12 +41,14 @@ export const signup = (email, password) => {
      }  
 
         console.log("user", user.uid)
-        console.log("user", user.accesToken)
+        let user1 = user.toJSON()
+        console.log("accesToken", user1.stsTokenManager.accessToken)
+        console.log("expTime", user1.stsTokenManager.expirationTime)
     
-        dispatch({type: SIGNUP, token: user.accesToken, userId: user.uid})
-        dispatch({type: AUTHENTICATE, userId: user.uid, token: user.accesToken, expiryTime: parseInt(user.expirationTime) * 1000})
-        const expirationDate = new Date(new Date().getTime() + parseInt(user.expirationTime) * 1000) // resData.expiresIn string with seconds
-        saveDataToStorage(user.accesToken, user.uid, expirationDate)
+        dispatch({type: SIGNUP, token: user1.stsTokenManager.accessToken, userId: user.uid})
+        dispatch({type: AUTHENTICATE, userId: user.uid, token: user1.stsTokenManager.accessToken, expiryTime: parseInt(user1.stsTokenManager.expirationTime)})
+        const expirationDate = new Date(new Date().getTime() + parseInt(user1.stsTokenManager.expirationTime)) // resData.expiresIn string with seconds
+        saveDataToStorage(user1.stsTokenManager.accessToken, user.uid, expirationDate)
     }
 };
 
@@ -68,8 +70,8 @@ export const login = (email, password) => {
         console.log("expTime", user1.stsTokenManager.expirationTime)
 
         dispatch({type: LOGIN, token: user1.stsTokenManager.accessToken, userId: user.uid});
-        dispatch({type: AUTHENTICATE, userId: user.uid, token: user1.stsTokenManager.accessToken, expiryTime: parseInt(user1.stsTokenManager.expirationTime) * 1000})
-        const expirationDate = new Date(new Date().getTime() + parseInt(user1.stsTokenManager.expirationTime) * 1000) // resData.expiresIn string with seconds
+        dispatch({type: AUTHENTICATE, userId: user.uid, token: user1.stsTokenManager.accessToken, expiryTime: parseInt(user1.stsTokenManager.expirationTime)})
+        const expirationDate = new Date(new Date().getTime() + parseInt(user1.stsTokenManager.expirationTime))
         saveDataToStorage(user1.stsTokenManager.accessToken, user.uid, expirationDate)
     }
 };

@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useLayoutEffect} from "react";
+import React, {useEffect,  useLayoutEffect} from "react";
 import { View, StyleSheet, Platform, FlatList, ScrollView, Button, Text, TouchableOpacity } from "react-native";
 import {AntDesign} from "@expo/vector-icons"
 import { useSelector, useDispatch } from "react-redux";
@@ -31,7 +31,7 @@ const PlacesListScreen = props => {
 
     useEffect(() =>{
         
-        dispatch(placesActions.LoadPlaces())
+        dispatch(placesActions.loadPlaces())
     }, [dispatch]);
 
     return ( 

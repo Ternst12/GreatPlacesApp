@@ -1,84 +1,90 @@
-import React, {useState} from "react";
-import { ScrollView, View, StyleSheet, Text, TextInput, Button } from "react-native";
-import Colors from "../constants/Colors";
-import { useDispatch } from "react-redux";
-import * as placesActions from "../store/actions/placesActions"
-import ImageSelector from "../components/ImageSelector";
+import React, { useState, useCallback } from 'react';
+import {
+  ScrollView,
+  View,
+  Button,
+  Text,
+  TextInput,
+  StyleSheet
+} from 'react-native';
+import { useDispatch } from 'react-redux';
 
+import Colors from '../constants/Colors';
+import * as placesActions from '../store/actions/placesActions';
+import ImageSelector from '../components/ImageSelector';
+import LocationPicker from '../components/LocationPicker';
 
 const NewPlaceScreen = props => {
+  const [titleValue, setTitleValue] = useState('');
+  const [selectedImage, setSelectedImage] = useState();
+  const [selectedLocation, setSelectedLocation] = useState();
 
-    const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-    const [titleValue, setTitleValue] = useState('');
-    const [imageUri, setImageUri] = useState()
+  const titleChangeHandler = text => {
+    // you could add validation
+    setTitleValue(text);
+  };
 
-    const titleChangeHandler = text => {
-        setTitleValue(text);
-    }
+  const imageTakenHandler = imagePath => {
+    setSelectedImage(imagePath);
+  };
 
-    const savePlaceHandler = () => {
-        dispatch(placesActions.addPlace(titleValue, imageUri))
-        console.log(titleValue)
-        props.navigation.goBack();        
-    }
+  const locationPickedHandler = useCallback(location => {
+    setSelectedLocation(location);
+    console.log("location i newPlace = ", location)
+  }, []);
 
-    const imageTakenHandler = imagePath => {
-        setImageUri(imagePath)
-    };
+  const savePlaceHandler = () => {
+    dispatch(placesActions.addPlace(titleValue, selectedImage, selectedLocation));
+    props.navigation.goBack();
+  };
 
-    return ( 
-        
-        <ScrollView>
-            <View style={styles.form}>
-                <View style={styles.labelContainer}> 
-                    <Text style={styles.label}>Title</Text>
-                </View>
-                <TextInput 
-                style={styles.textInput} 
-                onChangeText={titleChangeHandler}
-                value={titleValue}
-                />
-                <ImageSelector onImageTaken={imageTakenHandler}/>
-                <Button 
-                title="Save Place" 
-                color={Colors.primary} 
-                onPress={savePlaceHandler}
-                />
-            </View>            
-        </ScrollView>
-        
-    )
+  return (
+    <ScrollView>
+      <View style={styles.form}>
+        <Text style={styles.label}>Title</Text>
+        <TextInput
+          style={styles.textInput}
+          onChangeText={titleChangeHandler}
+          value={titleValue}
+        />
+        <ImageSelector onImageTaken={imageTakenHandler} />
+        <LocationPicker
+          navigation={props.navigation}
+          route={props.route}
+          children = {props.children}
+          onLocationPicked={locationPickedHandler}
+        />
+        <Button
+          title="Save Place"
+          color={Colors.primary}
+          onPress={savePlaceHandler}
+        />
+      </View>
+    </ScrollView>
+  );
+};
 
-}
+NewPlaceScreen.navigationOptions = {
+  headerTitle: 'Add Place'
+};
 
-NewPlaceScreen.navigationOptions = navData => {
-    return {
-    headerTitle: "Add Place",
-    }
-}
-
-const styles = StyleSheet.create ({
-    labelContainer: {
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    form: {
-        margin: 30
-    },
-    label: {
-        fontSize: 20,
-        marginBottom: 10
-    },
-    textInput: {
-        borderBottomColor: "grey",
-        borderBottomWidth: 2,
-        marginBottom: 15,
-        paddingVertical: 5,
-        paddingHorizontal: 2
-    }
-
-})
-
+const styles = StyleSheet.create({
+  form: {
+    margin: 30
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 15
+  },
+  textInput: {
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+    marginBottom: 15,
+    paddingVertical: 4,
+    paddingHorizontal: 2
+  }
+});
 
 export default NewPlaceScreen;

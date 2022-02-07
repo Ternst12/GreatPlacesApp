@@ -14,6 +14,8 @@ const SignUpScreen = props => {
 
     const [isLoading, setIsLoading] = useState(false)
     const [email, setEmail] = useState("")
+    const [name, setName] = useState("")
+    const [imageUrl, setImageUrl] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("");
     const [passwordErrorMessage, setPasswordErrorMessage] = useState(false)
@@ -38,7 +40,7 @@ const SignUpScreen = props => {
         } else {
 
             try {
-                await dispatch(AuthActions.signup(email, password))
+                await dispatch(AuthActions.signup(email, password, name, imageUrl))
                 setPassword("")
                 setEmail("")
                 setConfirmPassword("")
@@ -71,6 +73,24 @@ const SignUpScreen = props => {
                 returnKeyType="next"
                 autoCapitalize="none"
             />
+
+            <FormInput 
+                value={name}
+                placeholderText="Skriv dit fulde navn"
+                onChangeText={text => setName(text)}
+                iconType="user"
+                returnKeyType="next"
+                autoCapitalize="none"
+            />
+
+            <FormInput 
+                value={imageUrl}
+                placeholderText="ImageUrl"
+                onChangeText={text => setImageUrl(text)}
+                iconType="user"
+                returnKeyType="next"
+                autoCapitalize="none"
+            />  
 
             <FormInput 
                 value={password}

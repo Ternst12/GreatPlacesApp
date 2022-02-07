@@ -23,7 +23,7 @@ export const init = () => {
     return promise;
 }
 
-export const inserPlace = (title, imageUri, adress, lat, lng) => {
+export const insertPlace = (title, imageUri, adress, lat, lng) => {
     
     const promise = new Promise((resolve, reject) => {
     
