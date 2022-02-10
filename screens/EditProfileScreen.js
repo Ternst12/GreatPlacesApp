@@ -7,7 +7,8 @@ import {
   TextInput,
   StyleSheet,
   Alert,
-  Platform
+  Platform, 
+  ActivityIndicator
 } from 'react-native';
 
 import { Ionicons, MaterialCommunityIcons, Feather, FontAwesome } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ import * as ImagePicker from "expo-image-picker"
 import * as AuthActions from "../store/actions/AuthActions"
 import { useDispatch, useSelector } from 'react-redux';
 import { db, storage } from '../firebase/firebase';
+
 
 const EditProfileScreen = () => {
   const [image, setImage] = useState(null);
@@ -75,6 +77,20 @@ const EditProfileScreen = () => {
     if( image == null ) {
       return null;
     }
+
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function() {
+        reject(new TypeError("Netværksfejl"))
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", image, true);
+      xhr.send(null);
+    });
+
     const uploadUri = image;
     let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
 
@@ -86,10 +102,9 @@ const EditProfileScreen = () => {
     setUploading(true);
     setTransferred(0);
 
-    
 
     const storageRef = storage.ref(`photos/${filename}`);
-    const task = storageRef.put(uploadUri);
+    const task = storageRef.put(blob);
 
     // Set transferred state
     task.on('state_changed', (taskSnapshot) => {
@@ -101,6 +116,13 @@ const EditProfileScreen = () => {
         Math.round(taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) *
           100,
       );
+    () => {
+      task.snapshot.ref.getDownloadURL().then((url) => {
+        console.log("download url = ", url)
+        blob.close();
+        return url;
+      })
+    }
     });
 
     try {
@@ -148,7 +170,7 @@ const EditProfileScreen = () => {
   const renderInner = () => (
     <View style={styles.panel}>
       <View style={{alignItems: 'center'}}>
-        <Text style={styles.panelTitle}>Upload Photo</Text>
+        <Text style={styles.panelTitle}>Upload et billede </Text>
         <Text style={styles.panelSubtitle}>Choose Your Profile Picture</Text>
       </View>
       <TouchableOpacity
@@ -196,7 +218,7 @@ const EditProfileScreen = () => {
         }}>
         <View style={{alignItems: 'center'}}>
           <TouchableOpacity onPress={() => bs.current.snapTo(0)}>
-            <View
+          {uploading ? <ActivityIndicator size={"small"} color={"orange"} /> : <View
               style={{
                 height: 100,
                 width: 100,
@@ -236,7 +258,7 @@ const EditProfileScreen = () => {
                   />
                 </View>
               </ImageBackground>
-            </View>
+            </View>}
           </TouchableOpacity>
           <Text style={{marginTop: 10, fontSize: 18, fontWeight: 'bold'}}>
             {userData ? userData.name : 'Test Person'} 

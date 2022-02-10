@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Alert
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import * as AuthActions from "../store/actions/AuthActions"
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -18,6 +19,7 @@ import { db } from '../firebase/firebase';
 const ProfileScreen = ({navigation, route}) => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null)
+  const isFocused = useIsFocused();
 
   const dispatch = useDispatch();
 
@@ -51,7 +53,7 @@ const ProfileScreen = ({navigation, route}) => {
 
   useEffect(() => {
     fetchUsers()
-  }, []);
+  }, [isFocused]);
 
   const handleLogout = useCallback(async() => {
 

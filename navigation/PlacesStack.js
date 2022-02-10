@@ -62,7 +62,8 @@ const ProfileStack = props => {
       name="Rediger"
       component={EditProfileScreen}
       options={{
-        headerShown: false,
+        title: "Rediger din profil",
+        headerShown: true,
       }}
     />
   </Stack.Navigator>
